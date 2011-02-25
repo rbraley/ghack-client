@@ -157,7 +157,10 @@ class Client(object):
         disconnect.disconnect.reason = ghack_pb2.Disconnect.QUIT
         disconnect.disconnect.reason_str = "Client disconnected"
         self.send(disconnect)
-        self.conn.close()
+
+        def close():
+            self.conn.close()
+        reactor.callLater(0.1, close)
 
     def send(self, msg):
         "Send a message to the server"
