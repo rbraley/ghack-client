@@ -54,6 +54,9 @@ class GhackProtocol(Protocol):
     def send_bytes(self, byte_buffer):
         self.transport.write(byte_buffer)
 
+    def close(self):
+        reactor.stop()
+
 LOGIN_FAILS = defaultdict(lambda: "Unknown reason")
 LOGIN_FAILS[ghack_pb2.LoginResult.ACCESS_DENIED] = "Access denied"
 LOGIN_FAILS[ghack_pb2.LoginResult.BANNED] = "Banned from server"
@@ -75,7 +78,7 @@ class Client(object):
 
 
     def handle(self, msg):
-        print "<<", msg
+        debug("<<", msg)
         if self.state == CONNECT_WAIT:
             self.handle_connect(msg.connect)
         elif self.state == LOGINRESULT_WAIT:
@@ -87,7 +90,7 @@ class Client(object):
     def handle_connect(self, connect):
         if connect.version != self.version:
             sys.stderr.write("Version strings do not match\n")
-            sys.exit(1)
+            self.conn.close()
 
         login = ghack_pb2.Message()
         login.type = ghack_pb2.Message.LOGIN
@@ -101,11 +104,13 @@ class Client(object):
         if not login_result.succeeded:
             sys.stderr.write("Login failed: " +
                     LOGIN_FAILS[login_result.reason])
-            sys.exit(1)
+            self.conn.close()
         self.state = CONNECTED
 
         print "Cool, we're connected! Disconnecting now"
-        self.disconnect()
+        def dc():
+            self.disconnect()
+        reactor.callLater(3, dc)
 
     def connect(self):
         """Do the client-server handshake"""
@@ -123,10 +128,11 @@ class Client(object):
         disconnect.disconnect.reason = ghack_pb2.Disconnect.QUIT
         disconnect.disconnect.reason_str = "Client disconnected"
         self.send(disconnect)
+        self.conn.close()
 
     def send(self, msg):
         "Send a message to the server"
-        print ">>", msg
+        debug(">>", msg)
         msg_bytes = msg.SerializeToString()
         self.conn.send_bytes(struct.pack('H', len(msg_bytes)) + msg_bytes)
 
@@ -143,7 +149,12 @@ def run(host, port, name):
     d.addCallback(on_connect)
     reactor.run()
 
+DEBUG = False
+def debug(*args):
+    if DEBUG:
+        print ' '.join(args)
 def main():
+    global DEBUG
     parser = OptionParser()
     parser.add_option('-s', '--host',
             help='Server hostname',
@@ -154,7 +165,13 @@ def main():
     parser.add_option('-n', '--name',
             help='Player name',
             default='pyClient')
+    parser.add_option('-v', '--verbose',
+            help='Player name',
+            action='store_true',
+            default=False)
+
     options, args = parser.parse_args()
+    DEBUG = options.verbose
 
     run(options.host, int(options.port), options.name)
 
