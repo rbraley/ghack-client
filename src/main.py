@@ -1,0 +1,163 @@
+#!/usr/bin/env python
+
+import sys
+import time
+import socket
+import struct
+from optparse import OptionParser
+from collections import defaultdict
+
+from twisted.internet import reactor
+from twisted.internet.endpoints import TCP4ClientEndpoint
+from twisted.internet.protocol import Protocol, ClientFactory
+
+from proto import protocol_pb2 as ghack_pb2
+
+class GhackClientFactory(ClientFactory):
+    def buildProtocol(self, addr):
+        return GhackProtocol()
+
+class GhackProtocol(Protocol):
+    def __init__(self):
+        self._buffer = ''
+        self.client = None
+
+    def dataReceived(self, data):
+        self._buffer += data
+
+        # flush the buffer of messages to send
+        while self.client != None:
+            msg = self.get_message()
+            if not msg:
+                return
+            self.dispatch(msg)
+
+    def get_message(self):
+        "Dispatches the next message from the server (non-blocking)"
+        if len(self._buffer) <= 2:
+            return None
+
+        msg_len = struct.unpack('H', self._buffer[:2])[0]
+        if len(self._buffer) < 2 + msg_len:
+            return None
+
+        msg = ghack_pb2.Message()
+        msg.ParseFromString(self._buffer[2:msg_len + 2])
+        
+        self._buffer = self._buffer[2 + msg_len:]
+
+        return msg
+
+    def dispatch(self, msg):
+        self.client.handle(msg)
+
+    def send_bytes(self, byte_buffer):
+        self.transport.write(byte_buffer)
+
+LOGIN_FAILS = defaultdict(lambda: "Unknown reason")
+LOGIN_FAILS[ghack_pb2.LoginResult.ACCESS_DENIED] = "Access denied"
+LOGIN_FAILS[ghack_pb2.LoginResult.BANNED] = "Banned from server"
+LOGIN_FAILS[ghack_pb2.LoginResult.SERVER_FULL] = "Server full"
+
+CONNECT_WAIT = 0
+LOGINRESULT_WAIT = 1
+CONNECTED = 2
+
+class Client(object):
+    def __init__(self, name):
+        self.name = name
+        self.conn = None
+        self.state = None
+        self.version = 1
+
+    def run(self):
+        self.connect()
+
+
+    def handle(self, msg):
+        print "<<", msg
+        if self.state == CONNECT_WAIT:
+            self.handle_connect(msg.connect)
+        elif self.state == LOGINRESULT_WAIT:
+            self.handle_login_result(msg.login_result)
+        else:
+            print "Unexpected message:", msg
+
+
+    def handle_connect(self, connect):
+        if connect.version != self.version:
+            sys.stderr.write("Version strings do not match\n")
+            sys.exit(1)
+
+        login = ghack_pb2.Message()
+        login.type = ghack_pb2.Message.LOGIN
+        login.login.name = self.name
+        login.login.authtoken = "passwordHash"
+        login.login.permissions = 0
+        self.state = LOGINRESULT_WAIT
+        self.send(login)
+
+    def handle_login_result(self, login_result):
+        if not login_result.succeeded:
+            sys.stderr.write("Login failed: " +
+                    LOGIN_FAILS[login_result.reason])
+            sys.exit(1)
+        self.state = CONNECTED
+
+        print "Cool, we're connected! Disconnecting now"
+        self.disconnect()
+
+    def connect(self):
+        """Do the client-server handshake"""
+        connect = ghack_pb2.Message()
+        connect.connect.version = self.version
+        connect.type = ghack_pb2.Message.CONNECT
+        self.state = CONNECT_WAIT
+        self.send(connect)
+
+
+    def disconnect(self):
+        "Disconnect from the server"
+        disconnect = ghack_pb2.Message()
+        disconnect.type = ghack_pb2.Message.DISCONNECT
+        disconnect.disconnect.reason = ghack_pb2.Disconnect.QUIT
+        disconnect.disconnect.reason_str = "Client disconnected"
+        self.send(disconnect)
+
+    def send(self, msg):
+        "Send a message to the server"
+        print ">>", msg
+        msg_bytes = msg.SerializeToString()
+        self.conn.send_bytes(struct.pack('H', len(msg_bytes)) + msg_bytes)
+
+def run(host, port, name):
+    client = Client(name)
+
+    def on_connect(protocol):
+        protocol.client = client
+        client.conn = protocol
+        client.run()
+
+    point = TCP4ClientEndpoint(reactor, host, port)
+    d = point.connect(GhackClientFactory())
+    d.addCallback(on_connect)
+    reactor.run()
+
+def main():
+    parser = OptionParser()
+    parser.add_option('-s', '--host',
+            help='Server hostname',
+            default='localhost')
+    parser.add_option('-p', '--port',
+            help='Server port',
+            default='9190')
+    parser.add_option('-n', '--name',
+            help='Player name',
+            default='pyClient')
+    options, args = parser.parse_args()
+
+    run(options.host, int(options.port), options.name)
+
+if __name__ == '__main__':
+    main()
+    sys.exit(0)

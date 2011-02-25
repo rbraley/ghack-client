@@ -1,0 +1,155 @@
+// Copyright 2010, 2011 The ghack Authors. All rights reserved.
+// Use of this source code is governed by the GNU General Public License
+// version 3 (or any later version). See the file COPYING for details.
+
+// Protocol version 1
+//
+// This file contains the Protocol Buffer definitions necessary for remote
+// communication. What follows is an overview of how to use the protobufs.
+//
+// The most basic part of this protocol is the Message message (pay
+// careful attention to capitalization). It contains all other messages when
+// sent and the type of message must be defined within. Note that only one
+// message may be sent within a Message at a time, while it is not an error
+// to fill in more than one message, it is a waste as only the defined Type
+// will be acknowledged.
+//
+// Each Message is prefixed by its size. This length is stored in the
+// first two bytes sent. Thus the maximum length of a message at this time
+// is 2^16 bytes.
+//
+// Thus to send any message, the following steps are required:
+// 1. Create desired message
+// 2. Create encapsulating Message
+// 3. Set Type in Message
+// 4. Assign message to its corresponding variable within the Message
+// 5. Send length of message (this length of a fully filled Message)
+// 6. Send message
+// 7. Ready to send the next message
+//
+// This method is reliable with any transmission method that is reliable
+// and in-order such as TCP, unix sockets, and unix pipes.
+// While most communication is asynchronus, the initial handshake has
+// an expected order before the server will accept general messages. The
+// purpose is to establish that both peers are speaking the same protocol
+// and to allow any authentication.
+//
+// The handshake goes as follows:
+// 1. Client sends Connect with used protocol version
+// 2. Server replies with Connect
+// 3. Client sends Login, only a username is required but the login may
+//    still require authentication depending on server settings.
+// 4. Server sends LoginResult which tells the client whether the login
+//    was accepted and if not, why not.
+//
+// After this handshake, general communication may progress. Generally,
+// this will begin with the server sending the current game state to the
+// the client.
+//
+// When the client wishes to disconnect, it may send a Disconnect message.
+//
+// For detailed information on how to use each message, see the comments
+// for the given message.
+
+package protocol;
+
+// Base message
+message Message {
+    enum Type {
+        CONNECT = 1;
+        DISCONNECT = 2;
+        LOGIN = 3;
+        LOGINRESULT = 4;
+        ADDENTITY = 5;
+        REMOVEENTITY = 6;
+        UPDATESTATE = 7;
+    }
+
+    // Type of message that this contains
+    required Type type = 1;
+
+    optional AddEntity add_entity = 2;
+    optional RemoveEntity remove_entity = 3;
+    optional UpdateState update_state = 4;
+
+    // Only frequent messages should have an id < 16
+    // One of these will be filled in
+    optional Connect connect = 16;
+    optional Disconnect disconnect = 17;
+    optional Login login = 18;
+    optional LoginResult login_result = 19;
+}
+
+message Connect {
+    // Protocol version being used, should match the version at the top of this file
+    required uint32 version = 1;
+    // Software version string, such as: "1414e56" (git SHA1) or "0.11" (release version)
+    optional string version_str = 2;
+}
+
+message Disconnect {
+    enum Reason {
+        QUIT = 1;                   // Normal quit
+        PROTOCOL_ERROR = 2;         // Some thing that violates the protocol was done
+        WRONG_PROTOCOL_VERSION = 3; // Incompatible protocol versions
+        KICKED = 4;                 // Forcibly disconnected by user with admin rights
+    }
+    required Reason reason = 1;
+    optional string reason_str = 2; // Human readable information about disconnect,
+                                    // such as a debug message, or maybe kick message
+}
+
+message Login {
+    required string name = 1;
+    optional string authtoken = 2; // aka password
+    optional uint32 permissions = 3; // Requested permission set
+}
+
+message LoginResult {
+    enum Reason {
+        ACCEPTED = 0;      // No errors
+        ACCESS_DENIED = 1; // Wrong username or password
+        SERVER_FULL = 2;   // Server has reached its maximum number of connected clients
+        BANNED = 3;        // There is an administrative ban on connecting IP and/or account
+    }
+    required bool succeeded = 1;
+    optional Reason reason = 2; // Reason for failure, unset on success
+}
+
+message AddEntity {
+    required int32 id = 1; // Unique identifier for the entity
+    optional string name = 2; // Entity type for any special handling
+}
+
+message RemoveEntity {
+    required int32 id = 1; // Unique identifier for the entity
+    optional string name = 2; // Entity type for any special handling
+}
+
+// Update a given state to a certain value
+// If the value is missing, remove the state
+message UpdateState {
+    required int32 id = 1; // Unique identifier for the owner entity
+    required string state_id = 2; // Name of the state to update
+    optional StateValue value = 3; // Value to set for the state
+}
+
+// States may contain any value, this message updates the most commonly used values.
+// Type and just one field must be filled in.
+// TODO: Add Vector3 and probably Quaternion as basic values
+message StateValue {
+    enum Type {
+        BOOL = 1;
+        INT = 2;
+        FLOAT = 3;
+        STRING = 4;
+        ARRAY = 5;
+    }
+
+    required Type type = 1;
+    optional bool bool_val = 2;
+    optional int32 int_val = 3;
+    optional float float_val = 4;
+    optional string string_val = 5;
+    repeated StateValue array_val = 6;
+}
