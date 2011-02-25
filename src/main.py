@@ -13,6 +13,14 @@ from twisted.internet.protocol import Protocol, ClientFactory
 
 from proto import protocol_pb2 as ghack_pb2
 
+class Entity(object):
+    def __init__(self, id, name):
+        self.id = id
+        self.name = name
+
+    def __unicode__(self):
+        return self.name
+
 class GhackClientFactory(ClientFactory):
     def buildProtocol(self, addr):
         return GhackProtocol()
@@ -72,17 +80,26 @@ class Client(object):
         self.conn = None
         self.state = None
         self.version = 1
+        self.entities = {} # id -> entity
+
 
     def run(self):
+        """Start the client connection"""
         self.connect()
 
 
     def handle(self, msg):
+        """
+        Handle messages. Needs to be replaced with more generic handler
+        objects for the various states, and soon
+        """
         debug("<<", msg)
         if self.state == CONNECT_WAIT:
             self.handle_connect(msg.connect)
         elif self.state == LOGINRESULT_WAIT:
             self.handle_login_result(msg.login_result)
+        elif self.state == CONNECTED:
+            self.handle_normal_message(msg)
         else:
             print "Unexpected message:", msg
 
@@ -107,10 +124,22 @@ class Client(object):
             self.conn.close()
         self.state = CONNECTED
 
-        print "Cool, we're connected! Disconnecting now"
+        wait_time = 10
+        print "Cool, we're connected! Disconnecting in %d seconds" % wait_time
         def dc():
             self.disconnect()
-        reactor.callLater(3, dc)
+        reactor.callLater(wait_time, dc)
+
+    def handle_normal_message(self, msg):
+        if msg.type == ghack_pb2.Message.ADDENTITY:
+            add = msg.add_entity
+            if add.id in self.entities:
+                print "Error: Added the same entity id (%d) twice" % add.id
+            self.entities[add.id] = Entity(add.id, add.name)
+            print "Entity list expanded:", [
+                    e.name for e in self.entities.values()]
+        else:
+            print "Unexpected message:", msg
 
     def connect(self):
         """Do the client-server handshake"""
