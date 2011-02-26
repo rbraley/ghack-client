@@ -7,7 +7,6 @@
 import struct
 
 from proto import protocol_pb2 as ghack_pb2
-import states
 import netclient
 import messages
 from debug import debug
@@ -18,12 +17,11 @@ Client:
 """
 
 class Client(object):
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, game):
+        self.game = game
         self.conn = None
         self.handler = None
         self.version = 1
-        self.entities = {} # id -> entity
 
     def run(self):
         """Start the client connection"""
@@ -56,9 +54,7 @@ class Client(object):
         self.handler = None
         self.send(disconnect)
 
-        def close():
-            self.conn.close()
-        self.conn.call_later(0.1, close)
+        self.conn.close()
 
     def send(self, msg):
         "Send a message to the server"
@@ -109,7 +105,7 @@ class ConnectHandler(Handler):
             sys.stderr.write("Version strings do not match\n")
             client.close()
 
-        login = messages.login(client.name)
+        login = messages.login(client.game.name)
         client.handler = LoginResultHandler(client)
         client.send(login)
 
@@ -124,21 +120,29 @@ class LoginResultHandler(Handler):
             client.close()
         client.handler = GameHandler(client)
 
-        wait_time = 10
-        print "Cool, we're connected! Disconnecting in %d seconds" % wait_time
-        def dc():
-            client.disconnect()
-        client.conn.call_later(wait_time, dc)
+        print "Connection established"
 
 
 class GameHandler(Handler):
     handlers = {
             ghack_pb2.Message.ADDENTITY: lambda h: h.handle_add,
+            ghack_pb2.Message.REMOVEENTITY: lambda h: h.handle_remove,
+            ghack_pb2.Message.UPDATESTATE: lambda h: h.handle_update,
         }
     def handle_add(self, client, add):
-        if add.id in client.entities:
-            print "Error: Added the same entity id (%d) twice" % add.id
-        client.entities[add.id] = states.Entity(add.id, add.name)
-        print "Entity list expanded:", [
-                e.name for e in client.entities.values()]
+        args = {'id': add.id}
+        if add.name:
+            args['name'] = add.name
+        client.game.add_entity(**args)
 
+    def handle_remove(self, client, add):
+        args = {'id': add.id}
+        if add.name:
+            args['name'] = add.name
+        client.game.remove_entity(**args)
+
+    def handle_update(self, client, add):
+        args = {'id': add.id, 'state_id': add.state_id}
+        if add.name:
+            args['value'] = messages.unwrap_state(add.value)
+        client.game.update_entity(**args)

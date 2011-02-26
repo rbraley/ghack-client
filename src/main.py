@@ -7,17 +7,36 @@
 import sys
 from optparse import OptionParser
 
+from twisted.internet import reactor
+
 from client import netclient
 from client.client import Client # redundaaaant
+from game.game import Game
 import debug
 
+# sleep 100ms between updates
+UPDATE_DELAY = 0.1
+
+def gameloop(game, client):
+    def inner():
+        if not game.running:
+            client.disconnect()
+            return
+        game.update()
+        reactor.callLater(UPDATE_DELAY, inner)
+
+    game.running = True
+    inner()
+
 def run(host, port, name):
-    client = Client(name)
+    game = Game(name)
+    client = Client(game)
 
     def on_connected(protocol):
         protocol.callback = lambda msg: client.handle(msg)
         client.conn = protocol
         client.run()
+        gameloop(game, client)
 
     netclient.connect(host, port, on_connected)
 
