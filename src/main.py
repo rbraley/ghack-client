@@ -64,5 +64,6 @@ def main():
     run(options.host, int(options.port), options.name)
 
 if __name__ == '__main__':
-    main()
+    reactor.callWhenRunning(main)
+    reactor.run()
     sys.exit(0)

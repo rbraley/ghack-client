@@ -25,15 +25,13 @@ def connect(host, port, on_connected):
     point = TCP4ClientEndpoint(reactor, host, port)
     d = point.connect(GhackClientFactory())
     if on_connected:
-        def wrapper(protocol):
-            try:
-                on_connected(protocol)
-            except:
-                reactor.stop()
-                raise
-
-        d.addCallback(wrapper)
-    reactor.run()
+        d.addCallback(on_connected)
+    def on_error(err):
+        print "Error connecting"
+        print err.getTraceback()
+        if reactor.running:
+            reactor.stop()
+    d.addErrback(on_error)
 
 
 class GhackClientFactory(ClientFactory):
