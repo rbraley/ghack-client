@@ -57,7 +57,7 @@ def move(direction, is_start):
     msg = ghack_pb2.Message()
     msg.type = ghack_pb2.Message.MOVE
     msg.move.direction = MOVE_DIRECTIONS[direction]
-    msg.move.start_or_stop = is_start
+    msg.move.start = is_start
     return msg
 
 
