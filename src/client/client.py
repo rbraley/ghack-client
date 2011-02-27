@@ -33,7 +33,11 @@ class Client(object):
         game_dir = self.game.direction[idx]
         if game_dir == self.last_move[idx]:
             return
-        sign = '+' if game_dir > 0 else '-'
+        
+        sign_dir = game_dir
+        if game_dir == 0:
+            sign_dir = self.last_move[idx]
+        sign = '+' if sign_dir > 0 else '-'
         self.send(messages.move(sign + axis, game_dir != 0))
         self.last_move[idx] = game_dir
 
