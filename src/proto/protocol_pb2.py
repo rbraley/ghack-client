@@ -10,7 +10,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = descriptor.FileDescriptor(
   name='protocol.proto',
   package='protocol',
-  serialized_pb='\n\x0eprotocol.proto\x12\x08protocol\"\xc2\x03\n\x07Message\x12$\n\x04type\x18\x01 \x02(\x0e\x32\x16.protocol.Message.Type\x12\'\n\nadd_entity\x18\x02 \x01(\x0b\x32\x13.protocol.AddEntity\x12-\n\rremove_entity\x18\x03 \x01(\x0b\x32\x16.protocol.RemoveEntity\x12+\n\x0cupdate_state\x18\x04 \x01(\x0b\x32\x15.protocol.UpdateState\x12\"\n\x07\x63onnect\x18\x10 \x01(\x0b\x32\x11.protocol.Connect\x12(\n\ndisconnect\x18\x11 \x01(\x0b\x32\x14.protocol.Disconnect\x12\x1e\n\x05login\x18\x12 \x01(\x0b\x32\x0f.protocol.Login\x12+\n\x0clogin_result\x18\x13 \x01(\x0b\x32\x15.protocol.LoginResult\"q\n\x04Type\x12\x0b\n\x07\x43ONNECT\x10\x01\x12\x0e\n\nDISCONNECT\x10\x02\x12\t\n\x05LOGIN\x10\x03\x12\x0f\n\x0bLOGINRESULT\x10\x04\x12\r\n\tADDENTITY\x10\x05\x12\x10\n\x0cREMOVEENTITY\x10\x06\x12\x0f\n\x0bUPDATESTATE\x10\x07\"/\n\x07\x43onnect\x12\x0f\n\x07version\x18\x01 \x02(\r\x12\x13\n\x0bversion_str\x18\x02 \x01(\t\"\x9d\x01\n\nDisconnect\x12+\n\x06reason\x18\x01 \x02(\x0e\x32\x1b.protocol.Disconnect.Reason\x12\x12\n\nreason_str\x18\x02 \x01(\t\"N\n\x06Reason\x12\x08\n\x04QUIT\x10\x01\x12\x12\n\x0ePROTOCOL_ERROR\x10\x02\x12\x1a\n\x16WRONG_PROTOCOL_VERSION\x10\x03\x12\n\n\x06KICKED\x10\x04\"=\n\x05Login\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x11\n\tauthtoken\x18\x02 \x01(\t\x12\x13\n\x0bpermissions\x18\x03 \x01(\r\"\x96\x01\n\x0bLoginResult\x12\x11\n\tsucceeded\x18\x01 \x02(\x08\x12,\n\x06reason\x18\x02 \x01(\x0e\x32\x1c.protocol.LoginResult.Reason\"F\n\x06Reason\x12\x0c\n\x08\x41\x43\x43\x45PTED\x10\x00\x12\x11\n\rACCESS_DENIED\x10\x01\x12\x0f\n\x0bSERVER_FULL\x10\x02\x12\n\n\x06\x42\x41NNED\x10\x03\"%\n\tAddEntity\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\"(\n\x0cRemoveEntity\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\"P\n\x0bUpdateState\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x10\n\x08state_id\x18\x02 \x02(\t\x12#\n\x05value\x18\x03 \x01(\x0b\x32\x14.protocol.StateValue\"\xe5\x01\n\nStateValue\x12\'\n\x04type\x18\x01 \x02(\x0e\x32\x19.protocol.StateValue.Type\x12\x10\n\x08\x62ool_val\x18\x02 \x01(\x08\x12\x0f\n\x07int_val\x18\x03 \x01(\x05\x12\x11\n\tfloat_val\x18\x04 \x01(\x02\x12\x12\n\nstring_val\x18\x05 \x01(\t\x12\'\n\tarray_val\x18\x06 \x03(\x0b\x32\x14.protocol.StateValue\";\n\x04Type\x12\x08\n\x04\x42OOL\x10\x01\x12\x07\n\x03INT\x10\x02\x12\t\n\x05\x46LOAT\x10\x03\x12\n\n\x06STRING\x10\x04\x12\t\n\x05\x41RRAY\x10\x05')
+  serialized_pb='\n\x0eprotocol.proto\x12\x08protocol\"\xea\x03\n\x07Message\x12$\n\x04type\x18\x01 \x02(\x0e\x32\x16.protocol.Message.Type\x12\'\n\nadd_entity\x18\x02 \x01(\x0b\x32\x13.protocol.AddEntity\x12-\n\rremove_entity\x18\x03 \x01(\x0b\x32\x16.protocol.RemoveEntity\x12+\n\x0cupdate_state\x18\x04 \x01(\x0b\x32\x15.protocol.UpdateState\x12\x1c\n\x04move\x18\x05 \x01(\x0b\x32\x0e.protocol.Move\x12\"\n\x07\x63onnect\x18\x10 \x01(\x0b\x32\x11.protocol.Connect\x12(\n\ndisconnect\x18\x11 \x01(\x0b\x32\x14.protocol.Disconnect\x12\x1e\n\x05login\x18\x12 \x01(\x0b\x32\x0f.protocol.Login\x12+\n\x0clogin_result\x18\x13 \x01(\x0b\x32\x15.protocol.LoginResult\"{\n\x04Type\x12\x0b\n\x07\x43ONNECT\x10\x01\x12\x0e\n\nDISCONNECT\x10\x02\x12\t\n\x05LOGIN\x10\x03\x12\x0f\n\x0bLOGINRESULT\x10\x04\x12\r\n\tADDENTITY\x10\x05\x12\x10\n\x0cREMOVEENTITY\x10\x06\x12\x0f\n\x0bUPDATESTATE\x10\x07\x12\x08\n\x04MOVE\x10\x07\"/\n\x07\x43onnect\x12\x0f\n\x07version\x18\x01 \x02(\r\x12\x13\n\x0bversion_str\x18\x02 \x01(\t\"\x9d\x01\n\nDisconnect\x12+\n\x06reason\x18\x01 \x02(\x0e\x32\x1b.protocol.Disconnect.Reason\x12\x12\n\nreason_str\x18\x02 \x01(\t\"N\n\x06Reason\x12\x08\n\x04QUIT\x10\x01\x12\x12\n\x0ePROTOCOL_ERROR\x10\x02\x12\x1a\n\x16WRONG_PROTOCOL_VERSION\x10\x03\x12\n\n\x06KICKED\x10\x04\"=\n\x05Login\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x11\n\tauthtoken\x18\x02 \x01(\t\x12\x13\n\x0bpermissions\x18\x03 \x01(\r\"\x96\x01\n\x0bLoginResult\x12\x11\n\tsucceeded\x18\x01 \x02(\x08\x12,\n\x06reason\x18\x02 \x01(\x0e\x32\x1c.protocol.LoginResult.Reason\"F\n\x06Reason\x12\x0c\n\x08\x41\x43\x43\x45PTED\x10\x00\x12\x11\n\rACCESS_DENIED\x10\x01\x12\x0f\n\x0bSERVER_FULL\x10\x02\x12\n\n\x06\x42\x41NNED\x10\x03\"%\n\tAddEntity\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\"(\n\x0cRemoveEntity\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\"P\n\x0bUpdateState\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x10\n\x08state_id\x18\x02 \x02(\t\x12#\n\x05value\x18\x03 \x01(\x0b\x32\x14.protocol.StateValue\"\xe5\x01\n\nStateValue\x12\'\n\x04type\x18\x01 \x02(\x0e\x32\x19.protocol.StateValue.Type\x12\x10\n\x08\x62ool_val\x18\x02 \x01(\x08\x12\x0f\n\x07int_val\x18\x03 \x01(\x05\x12\x11\n\tfloat_val\x18\x04 \x01(\x02\x12\x12\n\nstring_val\x18\x05 \x01(\t\x12\'\n\tarray_val\x18\x06 \x03(\x0b\x32\x14.protocol.StateValue\";\n\x04Type\x12\x08\n\x04\x42OOL\x10\x01\x12\x07\n\x03INT\x10\x02\x12\t\n\x05\x46LOAT\x10\x03\x12\n\n\x06STRING\x10\x04\x12\t\n\x05\x41RRAY\x10\x05\"\x99\x01\n\x04Move\x12+\n\tdirection\x18\x01 \x02(\x0e\x32\x18.protocol.Move.Direction\x12\x15\n\rstart_or_stop\x18\x02 \x02(\x08\"M\n\tDirection\x12\t\n\x05X_POS\x10\x01\x12\t\n\x05X_NEG\x10\x02\x12\t\n\x05Y_POS\x10\x03\x12\t\n\x05Y_NEG\x10\x04\x12\t\n\x05Z_POS\x10\x05\x12\t\n\x05Z_NEG\x10\x06')
 
 
 
@@ -48,11 +48,15 @@ _MESSAGE_TYPE = descriptor.EnumDescriptor(
       name='UPDATESTATE', index=6, number=7,
       options=None,
       type=None),
+    descriptor.EnumValueDescriptor(
+      name='MOVE', index=7, number=7,
+      options=None,
+      type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=366,
-  serialized_end=479,
+  serialized_start=396,
+  serialized_end=519,
 )
 
 _DISCONNECT_REASON = descriptor.EnumDescriptor(
@@ -80,8 +84,8 @@ _DISCONNECT_REASON = descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=610,
-  serialized_end=688,
+  serialized_start=650,
+  serialized_end=728,
 )
 
 _LOGINRESULT_REASON = descriptor.EnumDescriptor(
@@ -109,8 +113,8 @@ _LOGINRESULT_REASON = descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=834,
-  serialized_end=904,
+  serialized_start=874,
+  serialized_end=944,
 )
 
 _STATEVALUE_TYPE = descriptor.EnumDescriptor(
@@ -142,8 +146,45 @@ _STATEVALUE_TYPE = descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1240,
-  serialized_end=1299,
+  serialized_start=1280,
+  serialized_end=1339,
+)
+
+_MOVE_DIRECTION = descriptor.EnumDescriptor(
+  name='Direction',
+  full_name='protocol.Move.Direction',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    descriptor.EnumValueDescriptor(
+      name='X_POS', index=0, number=1,
+      options=None,
+      type=None),
+    descriptor.EnumValueDescriptor(
+      name='X_NEG', index=1, number=2,
+      options=None,
+      type=None),
+    descriptor.EnumValueDescriptor(
+      name='Y_POS', index=2, number=3,
+      options=None,
+      type=None),
+    descriptor.EnumValueDescriptor(
+      name='Y_NEG', index=3, number=4,
+      options=None,
+      type=None),
+    descriptor.EnumValueDescriptor(
+      name='Z_POS', index=4, number=5,
+      options=None,
+      type=None),
+    descriptor.EnumValueDescriptor(
+      name='Z_NEG', index=5, number=6,
+      options=None,
+      type=None),
+  ],
+  containing_type=None,
+  options=None,
+  serialized_start=1418,
+  serialized_end=1495,
 )
 
 
@@ -183,28 +224,35 @@ _MESSAGE = descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='connect', full_name='protocol.Message.connect', index=4,
+      name='move', full_name='protocol.Message.move', index=4,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='connect', full_name='protocol.Message.connect', index=5,
       number=16, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='disconnect', full_name='protocol.Message.disconnect', index=5,
+      name='disconnect', full_name='protocol.Message.disconnect', index=6,
       number=17, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='login', full_name='protocol.Message.login', index=6,
+      name='login', full_name='protocol.Message.login', index=7,
       number=18, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='login_result', full_name='protocol.Message.login_result', index=7,
+      name='login_result', full_name='protocol.Message.login_result', index=8,
       number=19, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -221,7 +269,7 @@ _MESSAGE = descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=29,
-  serialized_end=479,
+  serialized_end=519,
 )
 
 
@@ -255,8 +303,8 @@ _CONNECT = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=481,
-  serialized_end=528,
+  serialized_start=521,
+  serialized_end=568,
 )
 
 
@@ -291,8 +339,8 @@ _DISCONNECT = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=531,
-  serialized_end=688,
+  serialized_start=571,
+  serialized_end=728,
 )
 
 
@@ -333,8 +381,8 @@ _LOGIN = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=690,
-  serialized_end=751,
+  serialized_start=730,
+  serialized_end=791,
 )
 
 
@@ -369,8 +417,8 @@ _LOGINRESULT = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=754,
-  serialized_end=904,
+  serialized_start=794,
+  serialized_end=944,
 )
 
 
@@ -404,8 +452,8 @@ _ADDENTITY = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=906,
-  serialized_end=943,
+  serialized_start=946,
+  serialized_end=983,
 )
 
 
@@ -439,8 +487,8 @@ _REMOVEENTITY = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=945,
-  serialized_end=985,
+  serialized_start=985,
+  serialized_end=1025,
 )
 
 
@@ -481,8 +529,8 @@ _UPDATESTATE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=987,
-  serialized_end=1067,
+  serialized_start=1027,
+  serialized_end=1107,
 )
 
 
@@ -545,8 +593,44 @@ _STATEVALUE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1070,
-  serialized_end=1299,
+  serialized_start=1110,
+  serialized_end=1339,
+)
+
+
+_MOVE = descriptor.Descriptor(
+  name='Move',
+  full_name='protocol.Move',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='direction', full_name='protocol.Move.direction', index=0,
+      number=1, type=14, cpp_type=8, label=2,
+      has_default_value=False, default_value=1,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='start_or_stop', full_name='protocol.Move.start_or_stop', index=1,
+      number=2, type=8, cpp_type=7, label=2,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _MOVE_DIRECTION,
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1342,
+  serialized_end=1495,
 )
 
 
@@ -554,6 +638,7 @@ _MESSAGE.fields_by_name['type'].enum_type = _MESSAGE_TYPE
 _MESSAGE.fields_by_name['add_entity'].message_type = _ADDENTITY
 _MESSAGE.fields_by_name['remove_entity'].message_type = _REMOVEENTITY
 _MESSAGE.fields_by_name['update_state'].message_type = _UPDATESTATE
+_MESSAGE.fields_by_name['move'].message_type = _MOVE
 _MESSAGE.fields_by_name['connect'].message_type = _CONNECT
 _MESSAGE.fields_by_name['disconnect'].message_type = _DISCONNECT
 _MESSAGE.fields_by_name['login'].message_type = _LOGIN
@@ -567,6 +652,8 @@ _UPDATESTATE.fields_by_name['value'].message_type = _STATEVALUE
 _STATEVALUE.fields_by_name['type'].enum_type = _STATEVALUE_TYPE
 _STATEVALUE.fields_by_name['array_val'].message_type = _STATEVALUE
 _STATEVALUE_TYPE.containing_type = _STATEVALUE;
+_MOVE.fields_by_name['direction'].enum_type = _MOVE_DIRECTION
+_MOVE_DIRECTION.containing_type = _MOVE;
 
 class Message(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -621,5 +708,11 @@ class StateValue(message.Message):
   DESCRIPTOR = _STATEVALUE
   
   # @@protoc_insertion_point(class_scope:protocol.StateValue)
+
+class Move(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _MOVE
+  
+  # @@protoc_insertion_point(class_scope:protocol.Move)
 
 # @@protoc_insertion_point(module_scope)
