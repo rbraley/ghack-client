@@ -1,6 +1,6 @@
 ghack client
 ===============================================================================
-Unofficial Python client to ghack - https://github.com/archwyrm/ghack/
+Experimental 2D client for ghack - https://github.com/archwyrm/ghack/
 
 About
 -------------------------------------------------------------------------------
