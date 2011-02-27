@@ -22,7 +22,9 @@ def gameloop(game, client):
         if not game.running:
             client.disconnect()
             return
-        game.update()
+        if client.connected:
+            game.update()
+            client.update()
         reactor.callLater(UPDATE_DELAY, inner)
 
     game.running = True

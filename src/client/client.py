@@ -22,11 +22,26 @@ class Client(object):
         self.conn = None
         self.handler = None
         self.version = 1
+        self.connected = False
+        self.last_move = [0, 0]
 
     def run(self):
         """Start the client connection"""
         self.connect()
 
+    def update_move(self, idx, axis):
+        game_dir = self.game.direction[idx]
+        if game_dir == self.last_move[idx]:
+            return
+        sign = '+' if game_dir > 0 else '-'
+        self.send(messages.move(sign + axis, game_dir != 0))
+        self.last_move[idx] = game_dir
+
+
+    def update(self):
+        """Run every frame"""
+        self.update_move(0, 'x')
+        self.update_move(1, 'y')
 
     def handle(self, msg):
         """
@@ -45,7 +60,6 @@ class Client(object):
         connect = messages.connect(self.version)
         self.handler = ConnectHandler(self)
         self.send(connect)
-
 
     def disconnect(self):
         "Disconnect from the server"
@@ -119,6 +133,7 @@ class LoginResultHandler(Handler):
                     LOGIN_FAILS[login_result.reason])
             client.close()
         client.handler = GameHandler(client)
+        client.connected = True
 
         print "Connection established"
 

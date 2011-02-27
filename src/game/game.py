@@ -22,6 +22,7 @@ class Game(object):
     def __init__(self, name):
         self.name = name
         self.entities = {}
+        self.direction = [0, 0]
 
         # temporary; remove when curses gets added
         fd = sys.stdin.fileno()
@@ -59,11 +60,19 @@ class Game(object):
                 pass
 
     def update(self):
-        ch = None
+        self.move(0, 1)
+
         try:
             ch = sys.stdin.read(1)
         except IOError:
             pass
         else:
+            # do stuff with ch here?
             self.running = False
 
+    def move(self, x, y):
+        """Sending commands is weird. For now, just save it somewhere for
+        the network to pick up
+        """
+
+        self.direction = [x, y]

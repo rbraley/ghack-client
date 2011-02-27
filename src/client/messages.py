@@ -42,6 +42,25 @@ def disconnect(reason, reason_str=''):
         msg.disconnect.reason_str = reason_str
     return msg
 
+MOVE_DIRECTIONS = {
+        '+x': ghack_pb2.Move.X_POS,
+        '-x': ghack_pb2.Move.X_NEG,
+        '+y': ghack_pb2.Move.Y_POS,
+        '-y': ghack_pb2.Move.Y_NEG,
+        '+z': ghack_pb2.Move.Z_POS,
+        '-z': ghack_pb2.Move.Z_NEG,
+    }
+def move(direction, is_start):
+    """This is weird, at least for now. Pass it something of the form:
+    %(sign)s%(direction)s -- such as +x or -y.
+    """
+    msg = ghack_pb2.Message()
+    msg.type = ghack_pb2.Message.MOVE
+    msg.move.direction = MOVE_DIRECTIONS[direction]
+    msg.move.start_or_stop = is_start
+    return msg
+
+
 MESSAGE_TYPES = {
         ghack_pb2.Message.CONNECT: 'connect',
         ghack_pb2.Message.DISCONNECT: 'disconnect',
