@@ -5,6 +5,7 @@
 # version 3 (or any later version). See the file COPYING for details.
 
 import sys
+import time
 from optparse import OptionParser
 
 from twisted.internet import reactor
@@ -18,17 +19,20 @@ import debug
 UPDATE_DELAY = 0.1
 
 def gameloop(game, client):
-    def inner():
+    def inner(last_frame):
         if not game.running:
             client.disconnect()
             return
+        this_frame = time.time()
+        delta = this_frame - last_frame
         if client.connected:
-            game.update()
-            client.update()
-        reactor.callLater(UPDATE_DELAY, inner)
+            game.update(delta)
+            client.update(delta)
+        reactor.callLater(UPDATE_DELAY, inner, this_frame)
 
+    last_frame = time.time() - UPDATE_DELAY
     game.running = True
-    inner()
+    inner(last_frame)
 
 def run(host, port, name):
     game = Game(name)

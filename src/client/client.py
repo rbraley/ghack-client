@@ -38,8 +38,8 @@ class Client(object):
         self.last_move[idx] = game_dir
 
 
-    def update(self):
-        """Run every frame"""
+    def update(self, elapsed_seconds):
+        """Runs every frame"""
         self.update_move(0, 'x')
         self.update_move(1, 'y')
 

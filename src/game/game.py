@@ -59,7 +59,8 @@ class Game(object):
             except KeyError:
                 pass
 
-    def update(self):
+    def update(self, elapsed_seconds):
+        """Runs every frame"""
         self.move(0, 1)
 
         try:
