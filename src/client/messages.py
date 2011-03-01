@@ -6,6 +6,8 @@
 
 from proto import protocol_pb2 as ghack_pb2
 
+from game.objects import Vector
+
 """
 Contains convenience functions to create the various protocol buffer messages
 """
@@ -18,7 +20,10 @@ def unwrap_state(state):
     """Unwraps a Message"""
     if state.type == ghack_pb2.StateValue.ARRAY:
         return [unwrap_state(s) for s in state.array_val]
-    return getattr(state, STATE_TYPES[state.type])
+    val = getattr(state, STATE_TYPES[state.type])
+    if state.type in STATE_MAPPERS:
+        return STATE_MAPPERS[state.type](val)
+    return val
 
 def login(name, authtoken='', permissions=0):
     msg = ghack_pb2.Message()
@@ -42,24 +47,16 @@ def disconnect(reason, reason_str=''):
         msg.disconnect.reason_str = reason_str
     return msg
 
-MOVE_DIRECTIONS = {
-        '+x': ghack_pb2.Move.X_POS,
-        '-x': ghack_pb2.Move.X_NEG,
-        '+y': ghack_pb2.Move.Y_POS,
-        '-y': ghack_pb2.Move.Y_NEG,
-        '+z': ghack_pb2.Move.Z_POS,
-        '-z': ghack_pb2.Move.Z_NEG,
-    }
-def move(direction, is_start):
+def move(direction):
     """This is weird, at least for now. Pass it something of the form:
     %(sign)s%(direction)s -- such as +x or -y.
     """
     msg = ghack_pb2.Message()
     msg.type = ghack_pb2.Message.MOVE
-    msg.move.direction = MOVE_DIRECTIONS[direction]
-    msg.move.start = is_start
+    msg.move.direction.x = direction.x
+    msg.move.direction.y = direction.y
+    msg.move.direction.z = direction.z
     return msg
-
 
 MESSAGE_TYPES = {
         ghack_pb2.Message.CONNECT: 'connect',
@@ -70,11 +67,16 @@ MESSAGE_TYPES = {
         ghack_pb2.Message.REMOVEENTITY: 'remove_entity',
         ghack_pb2.Message.UPDATESTATE: 'update_state',
         ghack_pb2.Message.MOVE: 'move',
-        }
+    }
 
 STATE_TYPES = {
         ghack_pb2.StateValue.BOOL: 'bool_val',
         ghack_pb2.StateValue.INT: 'int_val',
         ghack_pb2.StateValue.FLOAT: 'float_val',
         ghack_pb2.StateValue.STRING: 'string_val',
-        }
+        ghack_pb2.StateValue.VECTOR3: 'vector3_val',
+    }
+
+STATE_MAPPERS = {
+        ghack_pb2.StateValue.VECTOR3: lambda v: Vector(v.x, v.y, v.z),
+    }

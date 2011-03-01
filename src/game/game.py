@@ -16,18 +16,19 @@ import sys
 import os
 
 from debug import debug
-from entity import Entity
+from objects import Entity, Vector
 
 class Game(object):
     def __init__(self, name):
         self.name = name
         self.entities = {}
-        self.direction = (0, 0)
+        self.direction = Vector()
 
         # also temporary: instead of taking input,
         # the game just pretends the character is
         # moving in a circle
         self.progress = 0
+        self.dir_idx = 0
 
         # temporary; remove when curses gets added
         fd = sys.stdin.fileno()
@@ -38,16 +39,11 @@ class Game(object):
         """Runs every frame"""
         self.progress += elapsed_seconds
         if self.progress > 1:
-            if self.direction[0] == 1:
-                d = 0, 1
-            elif self.direction[1] == 1:
-                d = -1, 0
-            elif self.direction[0] == -1:
-                d = 0, -1
-            else:
-                d = 1, 0
+            circle_map = [ (1 , 0), (0 , 1), (-1, 0), (0 , -1) ]
+            d = circle_map[self.dir_idx]
             self.move(*d)
             self.progress -= 1
+            self.dir_idx = (self.dir_idx + 1) % 4
 
         try:
             ch = sys.stdin.read(1)
@@ -92,4 +88,4 @@ class Game(object):
         the network to pick up
         """
 
-        self.direction = [x, y]
+        self.direction = Vector(x, y)

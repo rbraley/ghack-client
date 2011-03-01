@@ -25,3 +25,15 @@ class Entity(object):
         if len(name) > 8:
             name = name[:6] + '...'
         return "<Entity id=%d, name='%s'>" % (self.id, name)
+
+class Vector(object):
+    """A simple vector structure"""
+    def __init__(self, x=0, y=0, z=0):
+        self.x = x
+        self.y = y
+        self.z = z
+
+    def len_squared(self):
+        return (self.x * self.x +
+            self.y * self.y +
+            self.z * self.z)
