@@ -5,10 +5,31 @@
 # version 3 (or any later version). See the file COPYING for details.
 
 import sys
+import os
 import time
 from optparse import OptionParser
+import subprocess
 
 from twisted.internet import reactor
+
+# It's bad form to put code before an import, unless it has to go there:
+def generate_protoc():
+    """Regenerate the protoc python code (call before importing)"""
+    path = os.path.dirname(os.path.realpath(__file__))
+    parent = os.path.dirname(path)
+    proto_dir = os.path.join(parent, 'protocol')
+    proto_file = os.path.join(proto_dir, 'protocol.proto')
+    output_dir = os.path.join(path, 'proto')
+    if os.path.exists(proto_file):
+        cmd = "protoc --proto_path=%(proto_dir)s --python_out=%(output_dir)s %(proto_file)s" % locals()
+
+        subprocess.call(cmd, shell=True)
+try:
+    generate_protoc()
+except:
+    print "Failed to generate protobuf file -- is protoc installed?"
+    sys.exit(1)
+
 
 from client import netclient
 from client.client import Client # redundaaaant
