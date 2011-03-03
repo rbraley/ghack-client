@@ -46,7 +46,12 @@ def run(host, port, name):
 
     netclient.connect(host, port, on_connected)
 
-def main():
+def main(options, args):
+    debug.verbose = options.verbose
+
+    run(options.host, int(options.port), options.name)
+
+if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option('-s', '--host',
             help='Server hostname',
@@ -63,11 +68,6 @@ def main():
             default=False)
 
     options, args = parser.parse_args()
-    debug.verbose = options.verbose
-
-    run(options.host, int(options.port), options.name)
-
-if __name__ == '__main__':
-    reactor.callWhenRunning(main)
+    reactor.callWhenRunning(main, options, args)
     reactor.run()
     sys.exit(0)
