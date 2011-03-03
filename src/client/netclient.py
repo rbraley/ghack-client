@@ -37,6 +37,11 @@ def connect(host, port, on_connected):
 class GhackClientFactory(ClientFactory):
     def buildProtocol(self, addr):
         return GhackProtocol()
+    
+    def clientConnectionLost(self, connector, reason):
+        print "Lost connection:", reason
+        if reactor.running:
+            reactor.stop()
 
 class GhackProtocol(Protocol):
     def __init__(self):
