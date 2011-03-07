@@ -142,14 +142,14 @@ class GameHandler(Handler):
             args['name'] = add.name
         client.game.add_entity(**args)
 
-    def handle_remove(self, client, add):
-        args = {'id': add.id}
-        if add.name:
-            args['name'] = add.name
+    def handle_remove(self, client, remove):
+        args = {'id': remove.id}
+        if remove.name:
+            args['name'] = remove.name
         client.game.remove_entity(**args)
 
-    def handle_update(self, client, add):
-        args = {'id': add.id, 'state_id': add.state_id}
-        if add.name:
-            args['value'] = messages.unwrap_state(add.value)
+    def handle_update(self, client, update):
+        args = {'id': update.id, 'state_id': update.state_id}
+        if update.name:
+            args['value'] = messages.unwrap_state(update.value)
         client.game.update_entity(**args)
