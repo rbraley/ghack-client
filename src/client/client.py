@@ -150,6 +150,5 @@ class GameHandler(Handler):
 
     def handle_update(self, client, update):
         args = {'id': update.id, 'state_id': update.state_id}
-        if update.name:
-            args['value'] = messages.unwrap_state(update.value)
+        args['value'] = messages.unwrap_state(update.value)
         client.game.update_entity(**args)
