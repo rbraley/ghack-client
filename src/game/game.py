@@ -20,21 +20,19 @@ from objects import Entity, Vector
 
 class Game(object):
     def __init__(self, name):
-        #set up curses
+        self.name = name
+        self.entities = {}
+        self.direction = Vector()
+
+        self._init_curses()
+
+    def _init_curses(self):
         self.scr = curses.initscr()
         curses.noecho()
         curses.cbreak()
         curses.start_color()
         self.scr.keypad(1)
         
-        
-        self.name = name
-        self.entities = {}
-        self.direction = Vector()
-
-        self.create()
-        
-    def create(self):        
         curses.curs_set(0)
         self.scr.nodelay(1)	# Make getch() non-blocking
         curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
