@@ -70,8 +70,8 @@ def run(host, port, name):
     netclient.connect(host, port, on_connected)
     
 def cleanup():
-    curses.nocbreak();
-    #stdscr.keypad(0); 
+    curses.nocbreak()
+    #stdscr.keypad(0)
     curses.echo()
     curses.endwin()
 
