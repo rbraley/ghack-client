@@ -100,7 +100,11 @@ class Handler(object):
 
     def unexpected(self, msg):
         """Handle an unexpected message"""
-        print >> sys.stderr, "Unexpected message:", msg
+        try:
+            s = str(msg)
+            print >> sys.stderr, "Unexpected message:", s
+        except KeyError:
+            print >> sys.stderr, "Unknown message, ignoring"
 
 class ConnectHandler(Handler):
     """Handles the server's connect reply"""
