@@ -48,14 +48,12 @@ class Game(object):
         if id in self.entities:
             debug("Entity id %d added twice" % id)
         self.entities[id] = Entity(id, name)
-        self.redraw()
 
     def remove_entity(self, id, name=None):
         if id not in self.entities:
             debug("Entity id %d removed without being added" % id)
             return
         del self.entities[id]
-        self.redraw()
 
     def update_entity(self, id, state_id, value=None):
         if id not in self.entities:
