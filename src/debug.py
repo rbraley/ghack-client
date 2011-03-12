@@ -4,7 +4,9 @@
 # Use of this source code is governed by the GNU General Public License
 # version 3 (or any later version). See the file COPYING for details.
 
+import sys
+
 verbose = False
 def debug(*args):
     if verbose:
-        print ' '.join(map(str, args))
+        print >> sys.stderr, ' '.join(map(str, args))

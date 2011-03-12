@@ -27,8 +27,8 @@ def connect(host, port, on_connected):
     if on_connected:
         d.addCallback(on_connected)
     def on_error(err):
-        print "Error connecting"
-        print err.getTraceback()
+        print >> sys.stderr, "Error connecting"
+        print >> sys.stderr, err.getTraceback()
         if reactor.running:
             reactor.stop()
     d.addErrback(on_error)
@@ -39,7 +39,7 @@ class GhackClientFactory(ClientFactory):
         return GhackProtocol()
     
     def clientConnectionLost(self, connector, reason):
-        print "Lost connection:", reason
+        print >> sys.stderr, "Lost connection:", reason
         if reactor.running:
             reactor.stop()
 

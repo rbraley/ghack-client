@@ -5,6 +5,7 @@
 # version 3 (or any later version). See the file COPYING for details.
 
 import struct
+import sys
 
 from proto import protocol_pb2 as ghack_pb2
 import netclient
@@ -99,7 +100,7 @@ class Handler(object):
 
     def unexpected(self, msg):
         """Handle an unexpected message"""
-        print "Unexpected message:", msg
+        print >> sys.stderr, "Unexpected message:", msg
 
 class ConnectHandler(Handler):
     """Handles the server's connect reply"""
@@ -127,7 +128,7 @@ class LoginResultHandler(Handler):
         client.handler = GameHandler(client)
         client.connected = True
 
-        print "Connection established"
+        print >> sys.stderr, "Connection established"
 
 
 class GameHandler(Handler):
