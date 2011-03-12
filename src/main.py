@@ -9,6 +9,8 @@ import os
 import time
 from optparse import OptionParser
 import subprocess
+import curses
+import atexit
 
 from twisted.internet import reactor
 
@@ -66,10 +68,17 @@ def run(host, port, name):
         gameloop(game, client)
 
     netclient.connect(host, port, on_connected)
+    
+def cleanup():
+    curses.nocbreak();
+    #stdscr.keypad(0); 
+    curses.echo()
+    curses.endwin()
+
 
 def main(options, args):
     debug.verbose = options.verbose
-
+    #(run,options.host,int(options.port),options.name)
     run(options.host, int(options.port), options.name)
 
 if __name__ == '__main__':
@@ -87,6 +96,8 @@ if __name__ == '__main__':
             help='Player name',
             action='store_true',
             default=False)
+    
+    atexit.register(cleanup)
 
     options, args = parser.parse_args()
     reactor.callWhenRunning(main, options, args)
