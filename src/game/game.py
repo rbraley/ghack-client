@@ -43,6 +43,7 @@ class Game(object):
         """Runs every frame"""
         self.running = True
         self.redraw()
+        self._handle_input()
 
     def add_entity(self, id, name=None):
         if id in self.entities:
@@ -61,9 +62,6 @@ class Game(object):
             return
         self.entities[id].set_state(state_id, value)
         self.redraw()
-        self._handle_input()
-
-    
 
     def redraw(self):
         #print "%d Entities:" % len(self.entities)
