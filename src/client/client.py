@@ -94,7 +94,7 @@ class Handler(object):
         elif msg.type in self.expected_types:
             self.handle(self.client, msg)
         else:
-            unexpected(msg)
+            self.unexpected(msg)
 
 
     def unexpected(self, msg):
