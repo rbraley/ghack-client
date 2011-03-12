@@ -37,7 +37,7 @@ class Game(object):
     def create(self):        
         curses.curs_set(0)
         self.scr.nodelay(1)	# Make getch() non-blocking
-        curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLUE)
+        curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
         curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLUE)
         curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLUE)
         
@@ -86,6 +86,11 @@ class Game(object):
                     #self.scr.addstr(int(pos.y),int(pos.x), '⩕⎈☸⨳⩕⩖⩕@', curses.color_pair(2))
                     if in_bounds(pos.x,pos.y):
                         self.scr.addstr(int(pos.y),int(pos.x), asset, curses.color_pair(2))
+        self.scr.border()
+        try:
+            self.scr.addstr(0,self.scr.getmaxyx()[1]/2-9,"GHack SpiderForest",curses.color_pair(1))
+        except curses.error:
+            print("oh no!")
         self.scr.refresh()
 
     def _handle_input(self):

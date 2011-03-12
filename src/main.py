@@ -38,8 +38,8 @@ from client.client import Client # redundaaaant
 from game.game import Game
 import debug
 
-# sleep 100ms between updates
-UPDATE_DELAY = 0.1
+# sleep 00ms between updates
+UPDATE_DELAY = 0.003
 
 def gameloop(game, client):
     def inner(last_frame):
