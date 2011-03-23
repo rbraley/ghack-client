@@ -140,6 +140,7 @@ class GameHandler(Handler):
             ghack_pb2.Message.ADDENTITY: lambda h: h.handle_add,
             ghack_pb2.Message.REMOVEENTITY: lambda h: h.handle_remove,
             ghack_pb2.Message.UPDATESTATE: lambda h: h.handle_update,
+            ghack_pb2.Message.ASSIGNCONTROL: lambda h: h.handle_assign_control,
         }
     def handle_add(self, client, add):
         args = {'id': add.id}
@@ -157,3 +158,6 @@ class GameHandler(Handler):
         args = {'id': update.id, 'state_id': update.state_id}
         args['value'] = messages.unwrap_state(update.value)
         client.game.update_entity(**args)
+
+    def handle_assign_control(self, client, assign_control):
+        pass

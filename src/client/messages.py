@@ -67,6 +67,7 @@ MESSAGE_TYPES = {
         ghack_pb2.Message.REMOVEENTITY: 'remove_entity',
         ghack_pb2.Message.UPDATESTATE: 'update_state',
         ghack_pb2.Message.MOVE: 'move',
+        ghack_pb2.Message.ASSIGNCONTROL: 'assign_control',
     }
 
 STATE_TYPES = {
