@@ -82,7 +82,7 @@ class Game(object):
                         self.scr.addstr(int(pos.y),int(pos.x), asset, curses.color_pair(2))
         self.scr.border()
         try:
-            self.scr.addstr(0,self.scr.getmaxyx()[1]/2-9,"GHack SpiderForest",curses.color_pair(1))
+            self.scr.addstr(0,max(self.scr.getmaxyx()[1]/2-9,0),"GHack SpiderForest",curses.color_pair(1))
         except curses.error:
             print("oh no!")
         self.scr.refresh()
@@ -97,6 +97,8 @@ class Game(object):
             self.move(-1,0)
         elif ch == curses.KEY_RIGHT:
             self.move(1,0)
+        elif ch == ord('q'):
+            self.running = False
         
     def move(self, x, y):
         """Sending commands is weird. For now, just save it somewhere for
