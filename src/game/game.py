@@ -62,6 +62,13 @@ class Game(object):
             return
         self.entities[id].set_state(state_id, value)
         self.redraw()
+        
+    def get_player(self): 
+        for entity in self.entities.values():
+            if entity.name == "Player":
+                if entity.states.has_key('Position'):
+                    return entity
+        return None
 
     def redraw(self):
         #print "%d Entities:" % len(self.entities)
@@ -71,6 +78,18 @@ class Game(object):
             my,mx = self.scr.getmaxyx()
             return bx<x<mx and by<y<my
         
+        def restrict(x,lower,upper):
+            return min(max(lower,x),upper)
+        
+        offsety = offsetx = 0
+        maxy, maxx = self.scr.getmaxyx()
+        midy, midx = maxy/2, maxx/2
+        player = self.get_player()
+        if player:
+            pos = player.states['Position'] 
+            offsety,offsetx = midy-pos.y,midx-pos.x
+        
+        
         for entity in self.entities.values():
             #print(entity.name, entity.states)
             if entity.states.has_key('Position'):
@@ -78,14 +97,17 @@ class Game(object):
                 if entity.states.has_key('Asset'):
                     asset = entity.states['Asset']
                     #self.scr.addstr(int(pos.y),int(pos.x), '⩕⎈☸⨳⩕⩖⩕@', curses.color_pair(2))
-                    if in_bounds(pos.x,pos.y):
-                        self.scr.addstr(int(pos.y),int(pos.x), asset, curses.color_pair(2))
+                    posx = pos.x + offsetx
+                    posy = pos.y + offsety
+                    if in_bounds(posx,posy):
+                        self.scr.addstr(int(posy),int(posx), asset, curses.color_pair(2))
         self.scr.border()
         try:
-            self.scr.addstr(0,max(self.scr.getmaxyx()[1]/2-9,0),"GHack SpiderForest",curses.color_pair(1))
+            self.scr.addstr(0,max(midx-9,0),"GHack SpiderForest",curses.color_pair(1))
         except curses.error:
             print("oh no!")
-        self.scr.refresh()
+        self.scr.noutrefresh()
+        curses.doupdate()
 
     def _handle_input(self):
         ch = self.scr.getch()
@@ -97,6 +119,9 @@ class Game(object):
             self.move(-1,0)
         elif ch == curses.KEY_RIGHT:
             self.move(1,0)
+        elif ch == ord('h'):
+            for entity in self.entities.values():
+                sys.stderr.write(str(entity.id) + str(entity.name)+str(entity.states)+"\n")
         elif ch == ord('q'):
             self.running = False
         
