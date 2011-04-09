@@ -38,6 +38,7 @@ class Game(object):
         curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
         curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLUE)
         curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLUE)
+        self.create_hud()
         
     def update(self, elapsed_seconds):
         """Runs every frame"""
@@ -67,8 +68,35 @@ class Game(object):
         for entity in self.entities.values():
             if entity.name == "Player":
                 if entity.states.has_key('Position'):
-                    return entity
+                    if entity.states.has_key('Health'):
+                        if entity.states.has_key('MaxHealth'):
+                            if entity.states.has_key('Asset'):
+                                if entity.states.has_key('KillCount'):
+                                    return entity
         return None
+    
+    def create_hud(self):
+        y,x = self.scr.getmaxyx()
+        try:
+            self.hudwin = curses.newwin(5,20,1,x-21)
+            self.hudwin.nodelay(1)
+        except curses.error:
+            sys.stderr.write("HUD cannot be created!\n")
+        
+    def draw_hud(self, player):
+        health = player.states['Health']
+        max_health = player.states['MaxHealth']
+        kills = player.states['KillCount']
+        self.hudwin.erase()
+        try:
+            self.hudwin.addstr(1,1,"Health:",curses.color_pair(1) | curses.A_BOLD)
+            self.hudwin.addstr(1,8,"%s/%s"%(health,max_health),curses.color_pair(1))
+            self.hudwin.addstr(2,1,"Kills:",curses.color_pair(1)| curses.A_BOLD)
+            self.hudwin.addstr(2,8,str(kills),curses.color_pair(1))
+            self.hudwin.border()
+        except curses.error:
+            sys.stderr.write("HUD cannot be drawn!\n")
+        self.hudwin.noutrefresh()
 
     def redraw(self):
         #print "%d Entities:" % len(self.entities)
@@ -106,7 +134,10 @@ class Game(object):
             self.scr.addstr(0,max(midx-9,0),"GHack SpiderForest",curses.color_pair(1))
         except curses.error:
             print("oh no!")
+            
         self.scr.noutrefresh()
+        if player:
+            self.draw_hud(player) 
         curses.doupdate()
 
     def _handle_input(self):
@@ -119,6 +150,8 @@ class Game(object):
             self.move(-1,0)
         elif ch == curses.KEY_RIGHT:
             self.move(1,0)
+        elif ch == curses.KEY_RESIZE:
+            self.create_hud()
         elif ch == ord('h'):
             for entity in self.entities.values():
                 sys.stderr.write(str(entity.id) + str(entity.name)+str(entity.states)+"\n")
