@@ -37,3 +37,9 @@ class Vector(object):
         return (self.x * self.x +
             self.y * self.y +
             self.z * self.z)
+   
+    def __repr__(self):
+        return "Vector(%s,%s,%s)" % (self.x,self.y,self.z)
+    
+    def __str__(self):
+        return "<%s,%s,%s>" % (self.x,self.y,self.z)
